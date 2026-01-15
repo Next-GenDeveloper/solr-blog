@@ -1,0 +1,119 @@
+.service-page {
+  padding-top: 80px;
+}
+
+.service-hero {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: 100px 20px 60px;
+  text-align: center;
+}
+
+.service-hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.service-hero-content p {
+  font-size: 1.2rem;
+  opacity: 0.95;
+}
+
+.services-section {
+  background: white;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.service-card {
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  border-top: 4px solid var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-xl);
+}
+
+.service-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+}
+
+.service-card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+}
+
+.service-card > p {
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.service-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.service-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-light);
+}
+
+.check-icon {
+  color: var(--success-color);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.why-choose-section {
+  background: #f9fafb;
+}
+
+.why-choose-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.why-choose-content p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--text-light);
+}
+
+@media (max-width: 768px) {
+  .service-hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .service-card {
+    padding: 2rem 1.5rem;
+  }
+}
