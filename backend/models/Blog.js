@@ -42,7 +42,19 @@ const blogSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  likes: {
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }],
+  likesCount: {
+    type: Number,
+    default: 0,
+  },
+  commentsCount: {
+    type: Number,
+    default: 0,
+  },
+  shares: {
     type: Number,
     default: 0,
   },

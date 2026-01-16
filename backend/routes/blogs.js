@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Blog = require('../models/Blog');
+const Comment = require('../models/Comment');
 const { protect, admin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
@@ -185,6 +186,149 @@ router.delete('/:id', protect, admin, async (req, res) => {
     res.json({
       success: true,
       message: 'Blog deleted successfully',
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// @route   POST /api/blogs/:id/like
+// @desc    Like/Unlike a blog post
+// @access  Private
+router.post('/:id/like', protect, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    // Check if user already liked the blog
+    const alreadyLiked = blog.likes.includes(req.user._id);
+
+    if (alreadyLiked) {
+      // Unlike: remove user from likes array
+      blog.likes = blog.likes.filter(userId => userId.toString() !== req.user._id.toString());
+      blog.likesCount = Math.max(0, blog.likesCount - 1);
+    } else {
+      // Like: add user to likes array
+      blog.likes.push(req.user._id);
+      blog.likesCount += 1;
+    }
+
+    await blog.save();
+
+    res.json({
+      success: true,
+      liked: !alreadyLiked,
+      likesCount: blog.likesCount,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// @route   POST /api/blogs/:id/share
+// @desc    Increment share count
+// @access  Public
+router.post('/:id/share', async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    blog.shares += 1;
+    await blog.save();
+
+    res.json({
+      success: true,
+      shares: blog.shares,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// @route   GET /api/blogs/:id/comments
+// @desc    Get all comments for a blog
+// @access  Public
+router.get('/:id/comments', async (req, res) => {
+  try {
+    const comments = await Comment.find({ blog: req.params.id })
+      .sort({ createdAt: -1 })
+      .populate('user', 'name');
+
+    res.json({
+      success: true,
+      count: comments.length,
+      data: comments,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// @route   POST /api/blogs/:id/comments
+// @desc    Add a comment to a blog
+// @access  Private
+router.post('/:id/comments', protect, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    const comment = await Comment.create({
+      blog: req.params.id,
+      user: req.user._id,
+      userName: req.user.name,
+      text: req.body.text,
+    });
+
+    // Increment comments count
+    blog.commentsCount += 1;
+    await blog.save();
+
+    res.status(201).json({
+      success: true,
+      data: comment,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// @route   DELETE /api/blogs/:blogId/comments/:commentId
+// @desc    Delete a comment
+// @access  Private (Owner or Admin)
+router.delete('/:blogId/comments/:commentId', protect, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Check if user is comment owner or admin
+    if (comment.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to delete this comment' });
+    }
+
+    await comment.deleteOne();
+
+    // Decrement comments count
+    const blog = await Blog.findById(req.params.blogId);
+    if (blog) {
+      blog.commentsCount = Math.max(0, blog.commentsCount - 1);
+      await blog.save();
+    }
+
+    res.json({
+      success: true,
+      message: 'Comment deleted successfully',
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

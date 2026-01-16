@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FaClock, FaUser, FaEye, FaArrowLeft } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaClock, FaUser, FaEye, FaArrowLeft, FaHeart, FaComment, FaShare, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 import './BlogDetail.css';
 
 const BlogDetail = () => {
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState('');
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const [sharesCount, setSharesCount] = useState(0);
+  const { user, token } = useAuth();
 
   useEffect(() => {
     fetchBlog();
+    fetchComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -19,10 +29,122 @@ const BlogDetail = () => {
     try {
       const { data } = await axios.get(`/api/blogs/${id}`);
       setBlog(data.data);
+      setLikesCount(data.data.likesCount || 0);
+      setCommentsCount(data.data.commentsCount || 0);
+      setSharesCount(data.data.shares || 0);
+      
+      // Check if current user has liked this blog
+      if (user && data.data.likes) {
+        setIsLiked(data.data.likes.includes(user._id));
+      }
     } catch (error) {
       console.error('Error fetching blog:', error);
+      toast.error('Failed to load blog post');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get(`/api/blogs/${id}/comments`);
+      setComments(data.data);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
+  const handleLike = async () => {
+    if (!user) {
+      toast.info('Please login to like this post');
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        `/api/blogs/${id}/like`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setIsLiked(data.liked);
+      setLikesCount(data.likesCount);
+      toast.success(data.liked ? 'Liked!' : 'Unliked');
+    } catch (error) {
+      console.error('Error liking blog:', error);
+      toast.error('Failed to like post');
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      // Copy URL to clipboard
+      const url = window.location.href;
+      await navigator.clipboard.writeText(url);
+      
+      // Increment share count
+      const { data } = await axios.post(`/api/blogs/${id}/share`);
+      setSharesCount(data.shares);
+      
+      toast.success('Link copied to clipboard!');
+    } catch (error) {
+      console.error('Error sharing blog:', error);
+      toast.error('Failed to share post');
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast.info('Please login to comment');
+      return;
+    }
+
+    if (!commentText.trim()) {
+      toast.error('Comment cannot be empty');
+      return;
+    }
+
+    try {
+      const { data } = await axios.post(
+        `/api/blogs/${id}/comments`,
+        { text: commentText },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      
+      setComments([data.data, ...comments]);
+      setCommentsCount(prev => prev + 1);
+      setCommentText('');
+      toast.success('Comment added!');
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      toast.error('Failed to add comment');
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(
+        `/api/blogs/${id}/comments/${commentId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      
+      setComments(comments.filter(c => c._id !== commentId));
+      setCommentsCount(prev => Math.max(0, prev - 1));
+      toast.success('Comment deleted');
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast.error('Failed to delete comment');
     }
   };
 
@@ -90,6 +212,95 @@ const BlogDetail = () => {
               </div>
             </div>
           )}
+
+          {/* Blog Interactions */}
+          <div className="blog-interactions">
+            <motion.button
+              className={`interaction-btn ${isLiked ? 'liked' : ''}`}
+              onClick={handleLike}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={!user}
+            >
+              <FaHeart /> <span>{likesCount} {likesCount === 1 ? 'Like' : 'Likes'}</span>
+            </motion.button>
+            
+            <button className="interaction-btn">
+              <FaComment /> <span>{commentsCount} {commentsCount === 1 ? 'Comment' : 'Comments'}</span>
+            </button>
+            
+            <motion.button
+              className="interaction-btn"
+              onClick={handleShare}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaShare /> <span>{sharesCount} {sharesCount === 1 ? 'Share' : 'Shares'}</span>
+            </motion.button>
+          </div>
+
+          {/* Comments Section */}
+          <div className="comments-section">
+            <h3>Comments ({commentsCount})</h3>
+            
+            {user ? (
+              <form onSubmit={handleCommentSubmit} className="comment-form">
+                <textarea
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder="Share your thoughts..."
+                  rows="4"
+                  required
+                />
+                <button type="submit" className="btn btn-primary">
+                  Post Comment
+                </button>
+              </form>
+            ) : (
+              <div className="login-prompt">
+                <p>Please <Link to="/login">login</Link> to comment on this post.</p>
+              </div>
+            )}
+
+            <div className="comments-list">
+              <AnimatePresence>
+                {comments.map((comment, index) => (
+                  <motion.div
+                    key={comment._id}
+                    className="comment-item"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <div className="comment-header">
+                      <div className="comment-author">
+                        <FaUser className="comment-icon" />
+                        <span className="author-name">{comment.userName}</span>
+                        <span className="comment-date">
+                          {new Date(comment.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      {user && (user._id === comment.user || user.role === 'admin') && (
+                        <button
+                          className="delete-comment-btn"
+                          onClick={() => handleDeleteComment(comment._id)}
+                          title="Delete comment"
+                        >
+                          <FaTrash />
+                        </button>
+                      )}
+                    </div>
+                    <p className="comment-text">{comment.text}</p>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              
+              {comments.length === 0 && (
+                <p className="no-comments">No comments yet. Be the first to comment!</p>
+              )}
+            </div>
+          </div>
         </motion.article>
       </div>
     </div>

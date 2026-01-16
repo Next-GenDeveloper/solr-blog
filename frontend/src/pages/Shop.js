@@ -151,10 +151,23 @@ const Shop = () => {
                             {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}% OFF
                           </span>
                         )}
+                        {product.isFeatured && (
+                          <span className="featured-badge">Featured</span>
+                        )}
+                        {product.images && product.images.length > 1 && (
+                          <span className="image-count-badge">
+                            📷 {product.images.length}
+                          </span>
+                        )}
                       </div>
                       <div className="product-info">
                         <span className="product-category">{product.category}</span>
                         <h3>{product.name}</h3>
+                        <p className="product-description">
+                          {product.description.length > 80 
+                            ? product.description.substring(0, 80) + '...' 
+                            : product.description}
+                        </p>
                         <div className="product-rating">
                           {[...Array(5)].map((_, i) => (
                             <FaStar

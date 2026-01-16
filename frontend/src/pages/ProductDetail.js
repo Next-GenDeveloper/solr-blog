@@ -61,22 +61,45 @@ const ProductDetail = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="main-image">
+            <div className="main-image-container">
               <img
                 src={product.images?.[selectedImage] || 'https://via.placeholder.com/600x400?text=Solar+Product'}
                 alt={product.name}
+                className="main-product-image"
               />
+              {product.images && product.images.length > 1 && (
+                <div className="image-navigation">
+                  <button 
+                    className="nav-btn prev-btn"
+                    onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : product.images.length - 1)}
+                  >
+                    ‹
+                  </button>
+                  <button 
+                    className="nav-btn next-btn"
+                    onClick={() => setSelectedImage(prev => prev < product.images.length - 1 ? prev + 1 : 0)}
+                  >
+                    ›
+                  </button>
+                  <div className="image-counter">
+                    {selectedImage + 1} / {product.images.length}
+                  </div>
+                </div>
+              )}
             </div>
             {product.images && product.images.length > 1 && (
               <div className="thumbnail-images">
                 {product.images.map((image, index) => (
-                  <img
+                  <div
                     key={index}
-                    src={image}
-                    alt={`${product.name} ${index + 1}`}
-                    className={selectedImage === index ? 'active' : ''}
+                    className={`thumbnail-wrapper ${selectedImage === index ? 'active' : ''}`}
                     onClick={() => setSelectedImage(index)}
-                  />
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                    />
+                  </div>
                 ))}
               </div>
             )}
