@@ -15,10 +15,23 @@ import { useAuth } from '../../context/AuthContext';
 import './AdminLayout.css';
 
 const AdminLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 968);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 968) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const menuItems = [
     { path: '/admin', icon: <FaTachometerAlt />, label: 'Dashboard', exact: true },
