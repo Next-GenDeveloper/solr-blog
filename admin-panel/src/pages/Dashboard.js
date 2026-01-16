@@ -3,15 +3,18 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
   FaUsers, FaBlog, FaBox, FaShoppingCart, 
-  FaArrowUp, FaArrowDown, FaPlus, FaExternalLinkAlt,
-  FaFileAlt, FaUserPlus, FaCalendarAlt, FaChartLine,
-  FaBell, FaClock, FaCheckCircle, FaExclamationCircle
+  FaArrowUp, FaArrowDown, FaPlus,
+  FaFileAlt, FaUserPlus, FaChartLine,
+  FaClock, FaExclamationCircle
 } from 'react-icons/fa';
 import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, 
-  ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell
+  XAxis, YAxis, CartesianGrid, Tooltip, 
+  ResponsiveContainer, AreaChart, Area
 } from 'recharts';
 import axios from 'axios';
+import NotificationsWidget from '../components/NotificationsWidget';
+import ActivityTimeline from '../components/ActivityTimeline';
+import AdvancedAnalytics from '../components/AdvancedAnalytics';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -237,6 +240,33 @@ const Dashboard = () => {
           ))}
         </div>
       </section>
+
+      {/* New Widgets Row */}
+      <section className="widgets-grid">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
+          <NotificationsWidget />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+        >
+          <ActivityTimeline />
+        </motion.div>
+      </section>
+
+      {/* Advanced Analytics */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+      >
+        <AdvancedAnalytics />
+      </motion.div>
 
       <div className="dashboard-main-grid">
         <section className="chart-section">

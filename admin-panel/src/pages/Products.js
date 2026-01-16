@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaTimes, FaImage } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import './AdminPages.css';
@@ -20,6 +20,8 @@ const Products = () => {
     sku: '',
     isActive: true,
   });
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => {
     fetchProducts();
@@ -36,6 +38,31 @@ const Products = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length + selectedImages.length > 5) {
+      toast.error('Maximum 5 images allowed');
+      return;
+    }
+
+    setSelectedImages([...selectedImages, ...files]);
+
+    // Create previews
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index) => {
+    setSelectedImages(selectedImages.filter((_, i) => i !== index));
+    setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -44,11 +71,24 @@ const Products = () => {
         formDataToSend.append(key, formData[key]);
       });
 
+      // Append multiple images
+      selectedImages.forEach((image) => {
+        formDataToSend.append('images', image);
+      });
+
       if (editingProduct) {
-        await axios.put(`/api/products/${editingProduct._id}`, formDataToSend);
+        await axios.put(`/api/products/${editingProduct._id}`, formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
         toast.success('Product updated successfully');
       } else {
-        await axios.post('/api/products', formDataToSend);
+        await axios.post('/api/products', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
         toast.success('Product created successfully');
       }
 
@@ -83,12 +123,18 @@ const Products = () => {
       sku: product.sku,
       isActive: product.isActive,
     });
+    // Set existing images for preview
+    if (product.images && product.images.length > 0) {
+      setImagePreviews(product.images);
+    }
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingProduct(null);
+    setSelectedImages([]);
+    setImagePreviews([]);
     setFormData({
       name: '',
       description: '',
@@ -244,6 +290,46 @@ const Products = () => {
                   required
                 />
               </div>
+
+              {/* Multiple Image Upload */}
+              <div className="form-group">
+                <label>Product Images (Max 5 images)</label>
+                <div className="image-upload-container">
+                  <input
+                    type="file"
+                    id="product-images"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    style={{ display: 'none' }}
+                  />
+                  <label htmlFor="product-images" className="image-upload-btn">
+                    <FaImage />
+                    <span>Choose Images</span>
+                  </label>
+                  <span className="image-count">
+                    {imagePreviews.length}/5 images selected
+                  </span>
+                </div>
+
+                {imagePreviews.length > 0 && (
+                  <div className="image-previews-grid">
+                    {imagePreviews.map((preview, index) => (
+                      <div key={index} className="image-preview-item">
+                        <img src={preview} alt={`Preview ${index + 1}`} />
+                        <button
+                          type="button"
+                          className="remove-image-btn"
+                          onClick={() => removeImage(index)}
+                        >
+                          <FaTimes />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="form-group checkbox">
                 <label>
                   <input

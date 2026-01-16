@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './themes.css';
 
 // Context
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Components
 import AdminLayout from './components/AdminLayout';
@@ -21,9 +23,10 @@ import Contacts from './pages/Contacts';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <div className="App">
           <Routes>
             {/* Login Route */}
             <Route path="/login" element={<Login />} />
@@ -61,6 +64,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+  </ThemeProvider>
   );
 }
 

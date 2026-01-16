@@ -11,7 +11,8 @@ import {
   FaTimes,
   FaSignOutAlt
 } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
+import ThemeToggle from './ThemeToggle';
 import './AdminLayout.css';
 
 const AdminLayout = () => {
@@ -34,12 +35,12 @@ const AdminLayout = () => {
   }, []);
 
   const menuItems = [
-    { path: '/admin', icon: <FaTachometerAlt />, label: 'Dashboard', exact: true },
-    { path: '/admin/blogs', icon: <FaBlog />, label: 'Blogs' },
-    { path: '/admin/products', icon: <FaBox />, label: 'Products' },
-    { path: '/admin/orders', icon: <FaShoppingCart />, label: 'Orders' },
-    { path: '/admin/users', icon: <FaUsers />, label: 'Users' },
-    { path: '/admin/contacts', icon: <FaEnvelope />, label: 'Contacts' },
+    { path: '/', icon: <FaTachometerAlt />, label: 'Dashboard', exact: true },
+    { path: '/blogs', icon: <FaBlog />, label: 'Blogs' },
+    { path: '/products', icon: <FaBox />, label: 'Products' },
+    { path: '/orders', icon: <FaShoppingCart />, label: 'Orders' },
+    { path: '/users', icon: <FaUsers />, label: 'Users' },
+    { path: '/contacts', icon: <FaEnvelope />, label: 'Contacts' },
   ];
 
   const handleLogout = () => {
@@ -96,9 +97,12 @@ const AdminLayout = () => {
             {sidebarOpen ? <FaTimes /> : <FaBars />}
           </button>
 
-          <div className="header-user">
-            <span className="user-name">{user?.name}</span>
-            <span className="user-role">Admin</span>
+          <div className="header-right">
+            <ThemeToggle />
+            <div className="header-user">
+              <span className="user-name">{user?.name}</span>
+              <span className="user-role">Admin</span>
+            </div>
           </div>
         </header>
 

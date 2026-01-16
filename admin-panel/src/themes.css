@@ -1,0 +1,83 @@
+/* Light Mode (Default) */
+:root {
+  --bg-admin: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-secondary: #f1f5f9;
+  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #eef2ff;
+  --secondary: #10b981;
+  --secondary-dark: #059669;
+  --secondary-light: #d1fae5;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --accent: #8b5cf6;
+  --accent-light: #f5f3ff;
+  --info: #06b6d4;
+  --info-light: #cffafe;
+  --text-main: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --border-subtle: #e2e8f0;
+  --border-light: #f1f5f9;
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  --sidebar-text: rgba(255, 255, 255, 0.7);
+  --sidebar-active: rgba(99, 102, 241, 0.2);
+}
+
+/* Dark Mode */
+.dark-mode {
+  --bg-admin: #0f172a;
+  --bg-card: #1e293b;
+  --bg-secondary: #334155;
+  --bg-gradient: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  --primary: #818cf8;
+  --primary-dark: #6366f1;
+  --primary-light: #312e81;
+  --secondary: #34d399;
+  --secondary-dark: #10b981;
+  --secondary-light: #065f46;
+  --warning: #fbbf24;
+  --warning-light: #78350f;
+  --danger: #f87171;
+  --danger-light: #7f1d1d;
+  --accent: #a78bfa;
+  --accent-light: #4c1d95;
+  --info: #22d3ee;
+  --info-light: #164e63;
+  --text-main: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+  --border-subtle: #334155;
+  --border-light: #1e293b;
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+  --sidebar-text: rgba(255, 255, 255, 0.8);
+  --sidebar-active: rgba(129, 140, 248, 0.25);
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Override transitions for animations that shouldn't be affected */
+*:is(.animate, [class*="animate-"], [class*="transition-"]) {
+  transition: all 0.3s ease !important;
+}

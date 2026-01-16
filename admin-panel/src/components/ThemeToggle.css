@@ -1,0 +1,66 @@
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1rem;
+}
+
+.toggle-track {
+  width: 60px;
+  height: 32px;
+  border-radius: 16px;
+  position: relative;
+  transition: all 0.3s ease;
+  padding: 4px;
+}
+
+.toggle-track.light {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.toggle-track.dark {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+.toggle-thumb {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 0.75rem;
+}
+
+.toggle-track.light .toggle-thumb {
+  transform: translateX(0);
+  color: #f59e0b;
+}
+
+.toggle-track.dark .toggle-thumb {
+  transform: translateX(28px);
+  color: #4f46e5;
+}
+
+.theme-toggle:hover .toggle-track {
+  transform: scale(1.05);
+}
+
+.theme-toggle:active .toggle-track {
+  transform: scale(0.95);
+}
+
+/* Dark Mode Styles */
+.dark-mode .toggle-track.light {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+.dark-mode .toggle-track.dark {
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+}
