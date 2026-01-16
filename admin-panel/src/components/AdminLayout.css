@@ -2,12 +2,12 @@
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--bg-admin);
 }
 
 .admin-sidebar {
   width: 280px;
-  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  background: var(--sidebar-bg);
   color: white;
   display: flex;
   flex-direction: column;
@@ -240,18 +240,21 @@
 }
 
 .admin-header {
-  background: white;
+  background: var(--bg-card);
   padding: 1.25rem 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-subtle);
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
+}
+
+.dark-mode .admin-header {
+  background: rgba(30, 41, 59, 0.95);
 }
 
 .sidebar-toggle {
@@ -316,7 +319,7 @@
 
 .user-name {
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-main);
   font-size: 0.95rem;
   margin-bottom: 0.2rem;
 }
@@ -336,7 +339,7 @@
 .admin-content {
   flex: 1;
   animation: fadeIn 0.4s ease;
-  background: #f8fafc;
+  background: var(--bg-admin);
 }
 
 @keyframes fadeIn {

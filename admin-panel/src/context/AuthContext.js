@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
+    token: localStorage.getItem('token'),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

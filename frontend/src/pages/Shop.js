@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaSearch, FaFilter, FaStar } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaStar, FaShoppingCart } from 'react-icons/fa';
 import axios from 'axios';
+import { useCart } from '../context/CartContext';
 import './Shop.css';
 
 const Shop = () => {
@@ -13,6 +14,7 @@ const Shop = () => {
   const [priceRange] = useState({ min: '', max: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { addToCart } = useCart();
 
   const categories = ['All', 'Solar Panels', 'Inverters', 'Batteries', 'Accessories', 'Mounting Systems'];
 
@@ -61,6 +63,14 @@ const Shop = () => {
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setCurrentPage(1);
+  };
+
+  const handleAddToCart = async (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (product.stock > 0) {
+      await addToCart(product, 1);
+    }
   };
 
   return (
@@ -185,7 +195,14 @@ const Shop = () => {
                             <span className="product-price">${product.price}</span>
                           </div>
                           {product.stock > 0 ? (
-                            <span className="stock-status in-stock">In Stock</span>
+                            <motion.button
+                              className="btn-add-to-cart"
+                              onClick={(e) => handleAddToCart(e, product)}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              <FaShoppingCart /> Add
+                            </motion.button>
                           ) : (
                             <span className="stock-status out-of-stock">Out of Stock</span>
                           )}
