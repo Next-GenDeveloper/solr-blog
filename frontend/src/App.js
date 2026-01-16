@@ -15,6 +15,8 @@ import About from './pages/About';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import OrderConfirmation from './pages/OrderConfirmation';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import Contact from './pages/Contact';
@@ -65,6 +67,20 @@ function App() {
               <>
                 <Navbar />
                 <Cart />
+                <Footer />
+              </>
+            } />
+            <Route path="/checkout" element={
+              <>
+                <Navbar />
+                <Checkout />
+                <Footer />
+              </>
+            } />
+            <Route path="/order-confirmation" element={
+              <>
+                <Navbar />
+                <OrderConfirmation />
                 <Footer />
               </>
             } />

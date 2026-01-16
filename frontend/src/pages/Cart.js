@@ -11,14 +11,29 @@ const Cart = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Format currency as PKR
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-PK', {
+      style: 'currency',
+      currency: 'PKR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
   const handleCheckout = () => {
     if (!user) {
       navigate('/login');
       return;
     }
-    // Navigate to checkout page (to be implemented)
+    // Navigate to checkout page
     navigate('/checkout');
   };
+
+  // Calculate shipping
+  const subtotal = cart?.totalPrice || 0;
+  const shippingCost = subtotal >= 5000 ? 0 : 250;
+  const total = subtotal + shippingCost;
 
   if (!cart || cart.items.length === 0) {
     return (
@@ -77,7 +92,7 @@ const Cart = () => {
                 </div>
                 <div className="item-details">
                   <h3>{item.name}</h3>
-                  <p className="item-price">${item.price}</p>
+                  <p className="item-price">{formatCurrency(item.price)}</p>
                 </div>
                 <div className="item-quantity">
                   <button
@@ -96,7 +111,7 @@ const Cart = () => {
                   </button>
                 </div>
                 <div className="item-total">
-                  <p>${(item.price * item.quantity).toFixed(2)}</p>
+                  <p>{formatCurrency(item.price * item.quantity)}</p>
                 </div>
                 <button
                   className="remove-btn"
@@ -116,15 +131,22 @@ const Cart = () => {
             <h3>Order Summary</h3>
             <div className="summary-row">
               <span>Subtotal ({cart.totalItems} items)</span>
-              <span>${cart.totalPrice?.toFixed(2) || '0.00'}</span>
+              <span>{formatCurrency(subtotal)}</span>
             </div>
             <div className="summary-row">
               <span>Shipping</span>
-              <span>Calculated at checkout</span>
+              <span className={shippingCost === 0 ? 'free-shipping' : ''}>
+                {shippingCost === 0 ? 'FREE' : formatCurrency(shippingCost)}
+              </span>
             </div>
+            {shippingCost > 0 && (
+              <p className="free-shipping-note">
+                Add {formatCurrency(5000 - subtotal)} more for free shipping
+              </p>
+            )}
             <div className="summary-row total">
               <span>Total</span>
-              <span>${cart.totalPrice?.toFixed(2) || '0.00'}</span>
+              <span>{formatCurrency(total)}</span>
             </div>
             <button className="btn btn-primary checkout-btn" onClick={handleCheckout}>
               Proceed to Checkout

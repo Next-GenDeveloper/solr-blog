@@ -30,7 +30,7 @@ const orderSchema = new mongoose.Schema({
     image: String,
   }],
   customerInfo: {
-    name: {
+    fullName: {
       type: String,
       required: true,
     },
@@ -42,25 +42,51 @@ const orderSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+    // For backward compatibility
+    name: String,
   },
   shippingAddress: {
+    fullAddress: String,
     street: String,
-    city: String,
+    area: String,
+    city: {
+      type: String,
+      required: true,
+    },
+    province: {
+      type: String,
+      required: true,
+    },
+    postalCode: String,
+    country: {
+      type: String,
+      default: 'Pakistan',
+    },
+    landmark: String,
+    // For backward compatibility
     state: String,
     zipCode: String,
-    country: String,
   },
   billingAddress: {
+    fullAddress: String,
     street: String,
+    area: String,
     city: String,
+    province: String,
+    postalCode: String,
+    country: {
+      type: String,
+      default: 'Pakistan',
+    },
+    // For backward compatibility
     state: String,
     zipCode: String,
-    country: String,
   },
   paymentMethod: {
     type: String,
     required: true,
-    enum: ['credit_card', 'debit_card', 'paypal', 'cash_on_delivery'],
+    enum: ['cash_on_delivery', 'bank_transfer', 'jazzcash', 'easypaisa', 'credit_card', 'debit_card'],
+    default: 'cash_on_delivery',
   },
   paymentStatus: {
     type: String,
@@ -69,7 +95,7 @@ const orderSchema = new mongoose.Schema({
   },
   orderStatus: {
     type: String,
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled', 'returned'],
     default: 'pending',
   },
   subtotal: {

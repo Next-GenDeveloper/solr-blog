@@ -226,6 +226,22 @@
   color: var(--text-dark);
 }
 
+.summary-row .free-shipping {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.free-shipping-note {
+  font-size: 0.85rem;
+  color: #f59e0b;
+  background: #fef3c7;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  text-align: center;
+  border: 1px solid #fcd34d;
+}
+
 .checkout-btn {
   width: 100%;
   padding: 1rem;
