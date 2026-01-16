@@ -20,17 +20,8 @@ import ServiceProvider from './pages/ServiceProvider';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
-// Admin Pages
-import AdminLayout from './components/admin/AdminLayout';
-import AdminDashboard from './pages/admin/Dashboard';
-import AdminBlogs from './pages/admin/Blogs';
-import AdminProducts from './pages/admin/Products';
-import AdminOrders from './pages/admin/Orders';
-import AdminUsers from './pages/admin/Users';
-import AdminContacts from './pages/admin/Contacts';
-
-// Protected Route
-import ProtectedRoute from './components/ProtectedRoute';
+// Note: Admin pages have been moved to a separate admin-panel application
+// running on port 3001 to avoid session conflicts
 
 function App() {
   return (
@@ -97,20 +88,9 @@ function App() {
             } />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-
-            {/* Admin Routes */}
-            <Route path="/admin" element={
-              <ProtectedRoute adminOnly>
-                <AdminLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<AdminDashboard />} />
-              <Route path="blogs" element={<AdminBlogs />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="contacts" element={<AdminContacts />} />
-            </Route>
+            
+            {/* Admin panel now runs separately on port 3001 */}
+            {/* Access admin panel at: http://localhost:3001 */}
           </Routes>
           <ToastContainer
             position="top-right"
