@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaClock, FaUser, FaEye, FaArrowLeft, FaHeart, FaComment, FaShare, FaTrash } from 'react-icons/fa';
+import { FaClock, FaUser, FaEye, FaArrowLeft, FaHeart, FaComment, FaShare, FaTrash, FaFacebook, FaTwitter, FaLinkedin, FaCopy } from 'react-icons/fa';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -77,17 +77,47 @@ const BlogDetail = () => {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (platform) => {
+    const url = window.location.href;
+    const title = blog?.title || 'Check out this blog post';
+    const text = blog?.excerpt || blog?.title || '';
+
     try {
-      // Copy URL to clipboard
-      const url = window.location.href;
-      await navigator.clipboard.writeText(url);
-      
       // Increment share count
-      const { data } = await axios.post(`/api/blogs/${id}/share`);
-      setSharesCount(data.shares);
+      await axios.post(`/api/blogs/${id}/share`);
+      setSharesCount(prev => prev + 1);
+
+      switch (platform) {
+        case 'facebook':
+          window.open(
+            `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+            '_blank',
+            'width=600,height=400'
+          );
+          break;
+        case 'twitter':
+          window.open(
+            `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+            '_blank',
+            'width=600,height=400'
+          );
+          break;
+        case 'linkedin':
+          window.open(
+            `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+            '_blank',
+            'width=600,height=400'
+          );
+          break;
+        case 'copy':
+          await navigator.clipboard.writeText(url);
+          toast.success('Link copied to clipboard!');
+          return;
+        default:
+          break;
+      }
       
-      toast.success('Link copied to clipboard!');
+      toast.success('Shared successfully!');
     } catch (error) {
       console.error('Error sharing blog:', error);
       toast.error('Failed to share post');
@@ -229,14 +259,48 @@ const BlogDetail = () => {
               <FaComment /> <span>{commentsCount} {commentsCount === 1 ? 'Comment' : 'Comments'}</span>
             </button>
             
-            <motion.button
-              className="interaction-btn"
-              onClick={handleShare}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <button className="interaction-btn">
               <FaShare /> <span>{sharesCount} {sharesCount === 1 ? 'Share' : 'Shares'}</span>
-            </motion.button>
+            </button>
+          </div>
+
+          {/* Social Share Section */}
+          <div className="social-share-section">
+            <h4>Share this article</h4>
+            <div className="social-share-buttons">
+              <motion.button
+                className="social-btn facebook"
+                onClick={() => handleShare('facebook')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaFacebook /> Facebook
+              </motion.button>
+              <motion.button
+                className="social-btn twitter"
+                onClick={() => handleShare('twitter')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaTwitter /> X (Twitter)
+              </motion.button>
+              <motion.button
+                className="social-btn linkedin"
+                onClick={() => handleShare('linkedin')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaLinkedin /> LinkedIn
+              </motion.button>
+              <motion.button
+                className="social-btn copy"
+                onClick={() => handleShare('copy')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaCopy /> Copy Link
+              </motion.button>
+            </div>
           </div>
 
           {/* Comments Section */}

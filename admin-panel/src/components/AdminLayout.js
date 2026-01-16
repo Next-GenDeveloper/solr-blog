@@ -7,6 +7,8 @@ import {
   FaShoppingCart, 
   FaUsers, 
   FaEnvelope,
+  FaComment,
+  FaChartLine,
   FaBars,
   FaTimes,
   FaSignOutAlt
@@ -40,6 +42,8 @@ const AdminLayout = () => {
     { path: '/products', icon: <FaBox />, label: 'Products' },
     { path: '/orders', icon: <FaShoppingCart />, label: 'Orders' },
     { path: '/users', icon: <FaUsers />, label: 'Users' },
+    { path: '/comments', icon: <FaComment />, label: 'Comments' },
+    { path: '/analytics', icon: <FaChartLine />, label: 'Analytics' },
     { path: '/contacts', icon: <FaEnvelope />, label: 'Contacts' },
   ];
 

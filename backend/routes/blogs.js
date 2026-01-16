@@ -252,11 +252,11 @@ router.post('/:id/share', async (req, res) => {
 });
 
 // @route   GET /api/blogs/:id/comments
-// @desc    Get all comments for a blog
+// @desc    Get all approved comments for a blog
 // @access  Public
 router.get('/:id/comments', async (req, res) => {
   try {
-    const comments = await Comment.find({ blog: req.params.id })
+    const comments = await Comment.find({ blog: req.params.id, status: 'approved' })
       .sort({ createdAt: -1 })
       .populate('user', 'name');
 

@@ -20,6 +20,11 @@ const commentSchema = new mongoose.Schema({
     required: [true, 'Comment text is required'],
     trim: true,
   },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'approved', // Auto-approve for now, can be changed to 'pending'
+  },
   createdAt: {
     type: Date,
     default: Date.now,

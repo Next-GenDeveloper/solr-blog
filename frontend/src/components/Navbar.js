@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
+import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaUserCircle, FaShoppingCart } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -10,6 +11,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, logout, isAdmin } = useAuth();
+  const { cart } = useCart();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,6 +76,20 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-actions">
+          {/* Cart Icon */}
+          <Link to="/cart" className="cart-icon-link">
+            <motion.div
+              className="cart-icon-container"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaShoppingCart size={24} />
+              {cart?.totalItems > 0 && (
+                <span className="cart-badge">{cart.totalItems}</span>
+              )}
+            </motion.div>
+          </Link>
+
           {user ? (
             <div className="user-menu-container">
               <motion.button

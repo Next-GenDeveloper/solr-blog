@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FaStar, FaCheck, FaMinus, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useCart } from '../context/CartContext';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
@@ -12,6 +13,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchProduct();
@@ -38,8 +40,9 @@ const ProductDetail = () => {
     }
   };
 
-  const handleAddToCart = () => {
-    toast.success('Product added to cart!');
+  const handleAddToCart = async () => {
+    if (!product) return;
+    await addToCart(product, quantity);
   };
 
   if (loading) {

@@ -19,6 +19,8 @@ import Blogs from './pages/Blogs';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
 import Users from './pages/Users';
+import Comments from './pages/Comments';
+import Analytics from './pages/Analytics';
 import Contacts from './pages/Contacts';
 
 function App() {
@@ -43,6 +45,8 @@ function App() {
               <Route path="products" element={<Products />} />
               <Route path="orders" element={<Orders />} />
               <Route path="users" element={<Users />} />
+              <Route path="comments" element={<Comments />} />
+              <Route path="analytics" element={<Analytics />} />
               <Route path="contacts" element={<Contacts />} />
             </Route>
             

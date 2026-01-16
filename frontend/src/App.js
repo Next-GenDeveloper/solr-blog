@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Context
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 
 // Public Pages
 import Navbar from './components/Navbar';
@@ -13,6 +14,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import Contact from './pages/Contact';
@@ -26,7 +28,8 @@ import Register from './pages/Register';
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <CartProvider>
+        <Router>
         <div className="App">
           <Routes>
             {/* Public Routes */}
@@ -55,6 +58,13 @@ function App() {
               <>
                 <Navbar />
                 <ProductDetail />
+                <Footer />
+              </>
+            } />
+            <Route path="/cart" element={
+              <>
+                <Navbar />
+                <Cart />
                 <Footer />
               </>
             } />
@@ -104,7 +114,8 @@ function App() {
             pauseOnHover
           />
         </div>
-      </Router>
+        </Router>
+      </CartProvider>
     </AuthProvider>
   );
 }

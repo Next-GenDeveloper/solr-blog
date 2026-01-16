@@ -26,7 +26,9 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/solarexpe
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/blogs', require('./routes/blogs'));
+app.use('/api/comments', require('./routes/comments'));
 app.use('/api/products', require('./routes/products'));
+app.use('/api/cart', require('./routes/cart'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/contact', require('./routes/contact'));
 
