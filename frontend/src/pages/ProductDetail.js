@@ -130,9 +130,9 @@ const ProductDetail = () => {
 
             <div className="product-pricing">
               {product.comparePrice > product.price && (
-                <span className="compare-price">${product.comparePrice}</span>
+                <span className="compare-price">Rs. {product.comparePrice?.toLocaleString()}</span>
               )}
-              <span className="product-price">${product.price}</span>
+              <span className="product-price">Rs. {product.price?.toLocaleString()}</span>
               {product.comparePrice > product.price && (
                 <span className="discount-badge">
                   Save {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}%

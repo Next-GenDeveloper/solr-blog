@@ -16,7 +16,7 @@ const ActivityTimeline = () => {
       icon: <FaShoppingCart />,
       title: 'New Order Received',
       description: 'Order #5678 - Solar Panel Kit',
-      amount: '$2,499',
+      amount: 'Rs. 249,900',
       time: '10 minutes ago',
       color: '#8b5cf6'
     },

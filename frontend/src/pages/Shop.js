@@ -190,9 +190,9 @@ const Shop = () => {
                         <div className="product-footer">
                           <div className="product-pricing">
                             {product.comparePrice > product.price && (
-                              <span className="compare-price">${product.comparePrice}</span>
+                              <span className="compare-price">Rs. {product.comparePrice?.toLocaleString()}</span>
                             )}
-                            <span className="product-price">${product.price}</span>
+                            <span className="product-price">Rs. {product.price?.toLocaleString()}</span>
                           </div>
                           {product.stock > 0 ? (
                             <motion.button

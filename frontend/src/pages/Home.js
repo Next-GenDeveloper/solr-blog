@@ -260,7 +260,7 @@ const Home = () => {
                       <h3>{product.name}</h3>
                       <p className="product-category">{product.category}</p>
                       <div className="product-footer">
-                        <span className="product-price">${product.price}</span>
+                        <span className="product-price">Rs. {product.price?.toLocaleString()}</span>
                         <motion.span 
                           className="product-link"
                           whileHover={{ x: 5 }}

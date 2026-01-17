@@ -74,7 +74,7 @@ const Orders = () => {
                 <td>{order.orderNumber}</td>
                 <td>{order.customerInfo.name}</td>
                 <td>{order.items.length} items</td>
-                <td>${order.total.toFixed(2)}</td>
+                <td>Rs. {order.total?.toLocaleString()}</td>
                 <td>
                   <select
                     value={order.orderStatus}
@@ -130,15 +130,15 @@ const Orders = () => {
                 {selectedOrder.items.map((item, index) => (
                   <div key={index} style={{ padding: '0.75rem 0', borderBottom: '1px solid #e2e8f0' }}>
                     <p><strong>{item.name}</strong></p>
-                    <p>Quantity: {item.quantity} × ${item.price} = ${(item.quantity * item.price).toFixed(2)}</p>
+                    <p>Quantity: {item.quantity} × Rs. {item.price?.toLocaleString()} = Rs. {(item.quantity * item.price)?.toLocaleString()}</p>
                   </div>
                 ))}
 
                 <h3 style={{ marginTop: '1.5rem' }}>Order Summary</h3>
-                <p><strong>Subtotal:</strong> ${selectedOrder.subtotal.toFixed(2)}</p>
-                <p><strong>Tax:</strong> ${selectedOrder.tax.toFixed(2)}</p>
-                <p><strong>Shipping:</strong> ${selectedOrder.shippingCost.toFixed(2)}</p>
-                <p><strong>Total:</strong> ${selectedOrder.total.toFixed(2)}</p>
+                <p><strong>Subtotal:</strong> Rs. {selectedOrder.subtotal?.toLocaleString()}</p>
+                <p><strong>Tax:</strong> Rs. {selectedOrder.tax?.toLocaleString()}</p>
+                <p><strong>Shipping:</strong> Rs. {selectedOrder.shippingCost?.toLocaleString()}</p>
+                <p><strong>Total:</strong> Rs. {selectedOrder.total?.toLocaleString()}</p>
 
                 {selectedOrder.shippingAddress && (
                   <>

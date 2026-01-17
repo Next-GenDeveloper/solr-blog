@@ -181,7 +181,7 @@ const Products = () => {
               <tr key={product._id}>
                 <td>{product.name}</td>
                 <td><span className="badge">{product.category}</span></td>
-                <td>${product.price}</td>
+                <td>Rs. {product.price?.toLocaleString()}</td>
                 <td>{product.stock}</td>
                 <td>{product.sku}</td>
                 <td>

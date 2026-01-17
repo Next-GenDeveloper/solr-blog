@@ -56,7 +56,7 @@ const AdvancedAnalytics = () => {
   const metrics = [
     {
       title: 'Total Revenue',
-      value: '$109,400',
+      value: 'Rs. 10,940,000',
       change: '+23.5%',
       up: true,
       icon: <FaDollarSign />,
@@ -64,7 +64,7 @@ const AdvancedAnalytics = () => {
     },
     {
       title: 'Avg. Order Value',
-      value: '$2,450',
+      value: 'Rs. 245,000',
       change: '+12.3%',
       up: true,
       icon: <FaChartLine />,
