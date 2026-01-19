@@ -22,6 +22,7 @@ import Users from './pages/Users';
 import Comments from './pages/Comments';
 import Analytics from './pages/Analytics';
 import Contacts from './pages/Contacts';
+import SEOSettings from './pages/SEOSettings';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
               <Route path="comments" element={<Comments />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="contacts" element={<Contacts />} />
+              <Route path="seo" element={<SEOSettings />} />
             </Route>
             
             {/* Redirect any unknown routes to dashboard */}

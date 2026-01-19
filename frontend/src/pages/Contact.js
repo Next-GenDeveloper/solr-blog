@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import SEO from '../components/SEO';
 import './Contact.css';
 
 const Contact = () => {
@@ -63,6 +64,12 @@ const Contact = () => {
 
   return (
     <div className="contact-page">
+      <SEO
+        title="Contact Us - Get In Touch"
+        description="Have questions about solar energy? Contact our expert team for consultations, support, and information about our solar solutions."
+        keywords="contact, solar consultation, customer support, get in touch, solar inquiry"
+        type="website"
+      />
       {/* Hero Section */}
       <section className="contact-hero">
         <div className="contact-hero-content">

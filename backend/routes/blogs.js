@@ -4,6 +4,7 @@ const Blog = require('../models/Blog');
 const Comment = require('../models/Comment');
 const { protect, admin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const { createUniqueSlug, generateMetaTitle, generateMetaDescription, extractKeywords } = require('../utils/slugify');
 
 // @route   GET /api/blogs
 // @desc    Get all published blogs
@@ -72,7 +73,15 @@ router.get('/all', protect, admin, async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id).populate('author', 'name');
+    let blog;
+    
+    // Check if param is a valid MongoDB ObjectId or slug
+    if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      blog = await Blog.findById(req.params.id).populate('author', 'name');
+    } else {
+      // Try to find by slug
+      blog = await Blog.findOne({ slug: req.params.id }).populate('author', 'name');
+    }
 
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
@@ -107,8 +116,25 @@ router.post('/', protect, admin, upload.single('featuredImage'), async (req, res
       published: req.body.published === 'true',
     };
 
+    // Generate slug if not provided
+    if (req.body.slug) {
+      blogData.slug = await createUniqueSlug(Blog, req.body.slug);
+    } else {
+      blogData.slug = await createUniqueSlug(Blog, req.body.title);
+    }
+
+    // Generate SEO data if not provided
+    blogData.metaTitle = req.body.metaTitle || generateMetaTitle(req.body.title);
+    blogData.metaDescription = req.body.metaDescription || generateMetaDescription(req.body.content || req.body.excerpt);
+    blogData.keywords = req.body.keywords || extractKeywords(req.body.title + ' ' + (req.body.content || req.body.excerpt));
+    blogData.ogImage = req.body.ogImage || '';
+    blogData.canonicalUrl = req.body.canonicalUrl || '';
+
     if (req.file) {
       blogData.featuredImage = '/uploads/blogs/' + req.file.filename;
+      if (!blogData.ogImage) {
+        blogData.ogImage = blogData.featuredImage;
+      }
     }
 
     if (blogData.published) {
@@ -137,6 +163,8 @@ router.put('/:id', protect, admin, upload.single('featuredImage'), async (req, r
       return res.status(404).json({ message: 'Blog not found' });
     }
 
+    const titleChanged = req.body.title && req.body.title !== blog.title;
+
     blog.title = req.body.title || blog.title;
     blog.content = req.body.content || blog.content;
     blog.excerpt = req.body.excerpt || blog.excerpt;
@@ -145,6 +173,20 @@ router.put('/:id', protect, admin, upload.single('featuredImage'), async (req, r
     if (req.body.tags) {
       blog.tags = typeof req.body.tags === 'string' ? JSON.parse(req.body.tags) : req.body.tags;
     }
+
+    // Update slug if provided or if title changed
+    if (req.body.slug) {
+      blog.slug = await createUniqueSlug(Blog, req.body.slug, blog._id);
+    } else if (titleChanged) {
+      blog.slug = await createUniqueSlug(Blog, blog.title, blog._id);
+    }
+
+    // Update SEO fields
+    if (req.body.metaTitle !== undefined) blog.metaTitle = req.body.metaTitle;
+    if (req.body.metaDescription !== undefined) blog.metaDescription = req.body.metaDescription;
+    if (req.body.keywords !== undefined) blog.keywords = req.body.keywords;
+    if (req.body.ogImage !== undefined) blog.ogImage = req.body.ogImage;
+    if (req.body.canonicalUrl !== undefined) blog.canonicalUrl = req.body.canonicalUrl;
 
     if (req.body.published !== undefined) {
       const wasPublished = blog.published;

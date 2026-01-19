@@ -5,10 +5,11 @@ import { FaClock, FaUser, FaEye, FaArrowLeft, FaHeart, FaComment, FaShare, FaTra
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import SEO, { generateBlogStructuredData } from '../components/SEO';
 import './BlogDetail.css';
 
 const BlogDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams(); // Changed from id to slug
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState([]);
@@ -23,11 +24,12 @@ const BlogDetail = () => {
     fetchBlog();
     fetchComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [slug]); // Changed from id to slug
 
   const fetchBlog = async () => {
     try {
-      const { data } = await axios.get(`/api/blogs/${id}`);
+      const { data } = await axios.get(`/api/blogs/${slug}`); // Changed from id to slug
+      setBlog(data.data);
       setBlog(data.data);
       setLikesCount(data.data.likesCount || 0);
       setCommentsCount(data.data.commentsCount || 0);
@@ -46,8 +48,9 @@ const BlogDetail = () => {
   };
 
   const fetchComments = async () => {
+    if (!blog?._id) return;
     try {
-      const { data } = await axios.get(`/api/blogs/${id}/comments`);
+      const { data } = await axios.get(`/api/blogs/${blog?._id}/comments`); // Use blog._id for comments
       setComments(data.data);
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -60,9 +63,11 @@ const BlogDetail = () => {
       return;
     }
 
+    if (!blog?._id) return;
+
     try {
       const { data } = await axios.post(
-        `/api/blogs/${id}/like`,
+        `/api/blogs/${blog._id}/like`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -80,11 +85,12 @@ const BlogDetail = () => {
   const handleShare = async (platform) => {
     const url = window.location.href;
     const title = blog?.title || 'Check out this blog post';
-    const text = blog?.excerpt || blog?.title || '';
 
     try {
       // Increment share count
-      await axios.post(`/api/blogs/${id}/share`);
+      if (blog?._id) {
+        await axios.post(`/api/blogs/${blog._id}/share`);
+      }
       setSharesCount(prev => prev + 1);
 
       switch (platform) {
@@ -132,6 +138,8 @@ const BlogDetail = () => {
       return;
     }
 
+    if (!blog?._id) return;
+
     if (!commentText.trim()) {
       toast.error('Comment cannot be empty');
       return;
@@ -139,7 +147,7 @@ const BlogDetail = () => {
 
     try {
       const { data } = await axios.post(
-        `/api/blogs/${id}/comments`,
+        `/api/blogs/${blog._id}/comments`,
         { text: commentText },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -161,9 +169,11 @@ const BlogDetail = () => {
       return;
     }
 
+    if (!blog?._id) return;
+
     try {
       await axios.delete(
-        `/api/blogs/${id}/comments/${commentId}`,
+        `/api/blogs/${blog._id}/comments/${commentId}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -188,6 +198,18 @@ const BlogDetail = () => {
 
   return (
     <div className="blog-detail-page">
+      {blog && (
+        <SEO
+          title={blog.metaTitle || blog.title}
+          description={blog.metaDescription || blog.excerpt}
+          keywords={blog.keywords}
+          image={blog.ogImage || (blog.featuredImage ? `${process.env.REACT_APP_API_URL || ''}${blog.featuredImage}` : '')}
+          url={blog.canonicalUrl || window.location.href}
+          type="article"
+          author={blog.authorName}
+          structuredData={generateBlogStructuredData(blog, process.env.REACT_APP_API_URL || window.location.origin)}
+        />
+      )}
       <div className="container section-padding">
         <Link to="/blog" className="back-link">
           <FaArrowLeft /> Back to Blog

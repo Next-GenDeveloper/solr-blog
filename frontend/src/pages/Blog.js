@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaSearch, FaArrowRight, FaClock, FaUser } from 'react-icons/fa';
 import axios from 'axios';
+import SEO from '../components/SEO';
 import './Blog.css';
 
 const Blog = () => {
@@ -56,6 +57,12 @@ const Blog = () => {
 
   return (
     <div className="blog-page">
+      <SEO
+        title="Solar Energy Blog - News, Tips & Insights"
+        description="Stay updated with the latest solar energy news, installation guides, maintenance tips, and industry insights from our expert team."
+        keywords="solar blog, solar energy news, solar tips, renewable energy articles, solar installation guides"
+        type="website"
+      />
       {/* Hero Section */}
       <section className="blog-hero">
         <div className="blog-hero-content">
@@ -130,7 +137,7 @@ const Blog = () => {
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     whileHover={{ y: -10 }}
                   >
-                    <Link to={`/blog/${blog._id}`}>
+                    <Link to={`/blog/${blog.slug || blog._id}`}> {/* Use slug if available, fallback to _id */}
                       <div className="blog-image">
                         <img
                           src={blog.featuredImage || 'https://via.placeholder.com/400x250?text=Solar+Blog'}

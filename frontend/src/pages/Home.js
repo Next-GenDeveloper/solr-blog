@@ -3,15 +3,27 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaSolarPanel, FaBolt, FaLeaf, FaChartLine, FaArrowRight, FaClock, FaUsers, FaTrophy } from 'react-icons/fa';
 import axios from 'axios';
+import SEO from '../components/SEO';
 import './Home.css';
 
 const Home = () => {
   const [featuredBlogs, setFeaturedBlogs] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [seoData, setSeoData] = useState(null);
 
   useEffect(() => {
     fetchFeaturedContent();
+    fetchSEOData();
   }, []);
+
+  const fetchSEOData = async () => {
+    try {
+      const { data } = await axios.get('/api/seo/home');
+      setSeoData(data.data);
+    } catch (error) {
+      console.error('Error fetching SEO data:', error);
+    }
+  };
 
   const fetchFeaturedContent = async () => {
     try {
@@ -81,6 +93,14 @@ const Home = () => {
 
   return (
     <div className="home">
+      <SEO
+        title={seoData?.metaTitle || "Solar Expert - Premium Solar Solutions"}
+        description={seoData?.metaDescription || "Welcome to Solar Expert. Discover premium solar solutions, sustainable energy products, and expert insights on renewable energy."}
+        keywords={seoData?.keywords || "solar panels, solar energy, renewable energy, solar solutions, sustainable energy"}
+        image={seoData?.ogImage || ""}
+        url={seoData?.canonicalUrl || window.location.href}
+        type="website"
+      />
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-background">
@@ -248,7 +268,7 @@ const Home = () => {
                   variants={itemVariants}
                   whileHover={{ y: -15 }}
                 >
-                  <Link to={`/product/${product._id}`}>
+                  <Link to={`/products/${product.slug || product._id}`}> {/* Use slug if available */}
                     <div className="product-image">
                       <img
                         src={product.images?.[0] || 'https://via.placeholder.com/300x200?text=Solar+Product'}
@@ -322,7 +342,7 @@ const Home = () => {
                   variants={itemVariants}
                   whileHover={{ y: -15 }}
                 >
-                  <Link to={`/blog/${blog._id}`}>
+                  <Link to={`/blog/${blog.slug || blog._id}`}> {/* Use slug if available */}
                     <div className="blog-image">
                       <img
                         src={blog.featuredImage || 'https://via.placeholder.com/400x250?text=Solar+Blog'}

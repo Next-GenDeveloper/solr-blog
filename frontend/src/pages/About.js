@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaAward, FaUsers, FaGlobe, FaHandshake } from 'react-icons/fa';
+import SEO from '../components/SEO';
 import './About.css';
 
 const About = () => {
@@ -32,6 +33,12 @@ const About = () => {
 
   return (
     <div className="about-page">
+      <SEO
+        title="About Us - Solar Energy Experts"
+        description="Learn about our mission to provide sustainable solar energy solutions. Discover our values, team, and commitment to a greener future."
+        keywords="about us, solar energy, renewable energy, sustainability, green energy, solar experts"
+        type="website"
+      />
       {/* Hero Section */}
       <section className="about-hero">
         <div className="about-hero-content">

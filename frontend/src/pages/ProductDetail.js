@@ -6,10 +6,11 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import SEO, { generateProductStructuredData } from '../components/SEO';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams(); // Changed from id to slug
   const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,13 +32,20 @@ const ProductDetail = () => {
 
   useEffect(() => {
     fetchProduct();
-    fetchReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [slug]); // Changed from id to slug
+
+  // Fetch reviews after product is loaded
+  useEffect(() => {
+    if (product) {
+      fetchReviews();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product]);
 
   const fetchProduct = async () => {
     try {
-      const { data } = await axios.get(`/api/products/${id}`);
+      const { data } = await axios.get(`/api/products/${slug}`); // Changed from id to slug
       setProduct(data.data);
     } catch (error) {
       console.error('Error fetching product:', error);
@@ -48,9 +56,10 @@ const ProductDetail = () => {
   };
 
   const fetchReviews = async () => {
+    if (!product?._id) return; // Wait for product to be loaded
     setReviewsLoading(true);
     try {
-      const { data } = await axios.get(`/api/reviews/product/${id}`);
+      const { data } = await axios.get(`/api/reviews/product/${product._id}`); // Use product._id
       setReviews(data.data);
       setRatingDistribution(data.ratingDistribution);
     } catch (error) {
@@ -67,10 +76,12 @@ const ProductDetail = () => {
       return;
     }
 
+    if (!product?._id) return;
+
     setSubmittingReview(true);
     try {
       await axios.post('/api/reviews', {
-        productId: id,
+        productId: product._id,
         ...reviewForm
       });
       toast.success('Review submitted successfully!');
@@ -135,6 +146,17 @@ const ProductDetail = () => {
 
   return (
     <div className="product-detail-page">
+      {product && (
+        <SEO
+          title={product.metaTitle || product.name}
+          description={product.metaDescription || product.description}
+          keywords={product.keywords || `${product.name}, ${product.category}, solar products`}
+          image={product.ogImage || (product.images?.[0] ? `${process.env.REACT_APP_API_URL || ''}${product.images[0]}` : '')}
+          url={product.canonicalUrl || window.location.href}
+          type="product"
+          structuredData={generateProductStructuredData(product, process.env.REACT_APP_API_URL || window.location.origin)}
+        />
+      )}
       <div className="container section-padding">
         <div className="product-detail-grid">
           {/* Product Images */}

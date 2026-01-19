@@ -3,6 +3,7 @@ const router = express.Router();
 const Product = require('../models/Product');
 const { protect, admin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const { createUniqueSlug, generateMetaTitle, generateMetaDescription, extractKeywords } = require('../utils/slugify');
 
 // @route   GET /api/products
 // @desc    Get all active products
@@ -74,7 +75,15 @@ router.get('/all', protect, admin, async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    let product;
+    
+    // Check if param is a valid MongoDB ObjectId or slug
+    if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      product = await Product.findById(req.params.id);
+    } else {
+      // Try to find by slug
+      product = await Product.findOne({ slug: req.params.id });
+    }
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
@@ -109,8 +118,25 @@ router.post('/', protect, admin, upload.array('images', 5), async (req, res) => 
       isActive: req.body.isActive !== 'false',
     };
 
+    // Generate slug if not provided
+    if (req.body.slug) {
+      productData.slug = await createUniqueSlug(Product, req.body.slug);
+    } else {
+      productData.slug = await createUniqueSlug(Product, req.body.name);
+    }
+
+    // Generate SEO data if not provided
+    productData.metaTitle = req.body.metaTitle || generateMetaTitle(req.body.name);
+    productData.metaDescription = req.body.metaDescription || generateMetaDescription(req.body.description);
+    productData.keywords = req.body.keywords || extractKeywords(req.body.name + ' ' + req.body.description + ' ' + req.body.category);
+    productData.ogImage = req.body.ogImage || '';
+    productData.canonicalUrl = req.body.canonicalUrl || '';
+
     if (req.files && req.files.length > 0) {
       productData.images = req.files.map(file => '/uploads/products/' + file.filename);
+      if (!productData.ogImage) {
+        productData.ogImage = productData.images[0];
+      }
     }
 
     const product = await Product.create(productData);
@@ -135,6 +161,8 @@ router.put('/:id', protect, admin, upload.array('images', 5), async (req, res) =
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    const nameChanged = req.body.name && req.body.name !== product.name;
+
     product.name = req.body.name || product.name;
     product.description = req.body.description || product.description;
     product.price = req.body.price || product.price;
@@ -151,6 +179,20 @@ router.put('/:id', protect, admin, upload.array('images', 5), async (req, res) =
     if (req.body.specifications) {
       product.specifications = typeof req.body.specifications === 'string' ? JSON.parse(req.body.specifications) : req.body.specifications;
     }
+
+    // Update slug if provided or if name changed
+    if (req.body.slug) {
+      product.slug = await createUniqueSlug(Product, req.body.slug, product._id);
+    } else if (nameChanged) {
+      product.slug = await createUniqueSlug(Product, product.name, product._id);
+    }
+
+    // Update SEO fields
+    if (req.body.metaTitle !== undefined) product.metaTitle = req.body.metaTitle;
+    if (req.body.metaDescription !== undefined) product.metaDescription = req.body.metaDescription;
+    if (req.body.keywords !== undefined) product.keywords = req.body.keywords;
+    if (req.body.ogImage !== undefined) product.ogImage = req.body.ogImage;
+    if (req.body.canonicalUrl !== undefined) product.canonicalUrl = req.body.canonicalUrl;
 
     if (req.body.isFeatured !== undefined) {
       product.isFeatured = req.body.isFeatured === 'true' || req.body.isFeatured === true;

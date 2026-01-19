@@ -18,6 +18,13 @@ const Blogs = () => {
     tags: '',
     published: false,
     featuredImage: null,
+    // SEO Fields
+    slug: '',
+    metaTitle: '',
+    metaDescription: '',
+    keywords: '',
+    ogImage: '',
+    canonicalUrl: '',
   });
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -111,6 +118,13 @@ const Blogs = () => {
       tags: blog.tags.join(', '),
       published: blog.published,
       featuredImage: null,
+      // SEO Fields
+      slug: blog.slug || '',
+      metaTitle: blog.metaTitle || '',
+      metaDescription: blog.metaDescription || '',
+      keywords: blog.keywords || '',
+      ogImage: blog.ogImage || '',
+      canonicalUrl: blog.canonicalUrl || '',
     });
     setImagePreview(blog.featuredImage || null);
     setShowModal(true);
@@ -128,6 +142,13 @@ const Blogs = () => {
       tags: '',
       published: false,
       featuredImage: null,
+      // SEO Fields
+      slug: '',
+      metaTitle: '',
+      metaDescription: '',
+      keywords: '',
+      ogImage: '',
+      canonicalUrl: '',
     });
   };
 
@@ -284,6 +305,78 @@ const Blogs = () => {
                   Publish immediately
                 </label>
               </div>
+
+              {/* SEO Section */}
+              <div className="seo-section" style={{ marginTop: '30px', padding: '20px', background: '#f8f9fa', borderRadius: '8px' }}>
+                <h3 style={{ marginBottom: '20px', color: '#333' }}>SEO Settings</h3>
+                
+                <div className="form-group">
+                  <label>Slug (URL-friendly)</label>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    placeholder="auto-generated-from-title"
+                  />
+                  <small style={{ color: '#666' }}>Leave blank to auto-generate from title</small>
+                </div>
+
+                <div className="form-group">
+                  <label>Meta Title (60 chars max)</label>
+                  <input
+                    type="text"
+                    value={formData.metaTitle}
+                    onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                    maxLength="60"
+                    placeholder="SEO-optimized title"
+                  />
+                  <small style={{ color: '#666' }}>{formData.metaTitle.length}/60 characters</small>
+                </div>
+
+                <div className="form-group">
+                  <label>Meta Description (160 chars max)</label>
+                  <textarea
+                    value={formData.metaDescription}
+                    onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                    maxLength="160"
+                    rows="3"
+                    placeholder="Brief description for search engines"
+                  />
+                  <small style={{ color: '#666' }}>{formData.metaDescription.length}/160 characters</small>
+                </div>
+
+                <div className="form-group">
+                  <label>Keywords (comma separated)</label>
+                  <input
+                    type="text"
+                    value={formData.keywords}
+                    onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
+                    placeholder="solar, energy, renewable"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>OG Image URL (optional)</label>
+                  <input
+                    type="text"
+                    value={formData.ogImage}
+                    onChange={(e) => setFormData({ ...formData, ogImage: e.target.value })}
+                    placeholder="/uploads/blogs/image.jpg"
+                  />
+                  <small style={{ color: '#666' }}>Leave blank to use featured image</small>
+                </div>
+
+                <div className="form-group">
+                  <label>Canonical URL (optional)</label>
+                  <input
+                    type="text"
+                    value={formData.canonicalUrl}
+                    onChange={(e) => setFormData({ ...formData, canonicalUrl: e.target.value })}
+                    placeholder="https://example.com/blog/slug"
+                  />
+                </div>
+              </div>
+
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
                   Cancel

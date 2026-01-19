@@ -73,6 +73,7 @@ const AdminLayout = () => {
     { path: '/comments', icon: <FaComment />, label: 'Comments' },
     { path: '/analytics', icon: <FaChartLine />, label: 'Analytics' },
     { path: '/contacts', icon: <FaEnvelope />, label: 'Contacts' },
+    { path: '/seo', icon: <FaSearch />, label: 'SEO Settings' },
   ];
 
   const notifications = [

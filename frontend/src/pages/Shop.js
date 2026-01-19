@@ -150,7 +150,7 @@ const Shop = () => {
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     whileHover={{ y: -10 }}
                   >
-                    <Link to={`/product/${product._id}`}>
+                    <Link to={`/products/${product.slug || product._id}`}> {/* Use slug if available, fallback to _id */}
                       <div className="product-image">
                         <img
                           src={product.images?.[0] || 'https://via.placeholder.com/300x200?text=Solar+Product'}

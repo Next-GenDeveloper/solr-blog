@@ -35,6 +35,13 @@ const Products = () => {
     stock: '',
     sku: '',
     isActive: true,
+    // SEO Fields
+    slug: '',
+    metaTitle: '',
+    metaDescription: '',
+    keywords: '',
+    ogImage: '',
+    canonicalUrl: '',
   });
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -177,6 +184,13 @@ const Products = () => {
       stock: product.stock,
       sku: product.sku,
       isActive: product.isActive,
+      // SEO Fields
+      slug: product.slug || '',
+      metaTitle: product.metaTitle || '',
+      metaDescription: product.metaDescription || '',
+      keywords: product.keywords || '',
+      ogImage: product.ogImage || '',
+      canonicalUrl: product.canonicalUrl || '',
     });
     if (product.images && product.images.length > 0) {
       setImagePreviews(product.images);
@@ -203,6 +217,13 @@ const Products = () => {
       stock: '',
       sku: '',
       isActive: true,
+      // SEO Fields
+      slug: '',
+      metaTitle: '',
+      metaDescription: '',
+      keywords: '',
+      ogImage: '',
+      canonicalUrl: '',
     });
   };
 
@@ -736,6 +757,82 @@ const Products = () => {
                         ))}
                       </div>
                     )}
+                  </div>
+                </div>
+
+                {/* SEO Section */}
+                <div className="form-section full-width" style={{ marginTop: '20px', background: '#f8f9fa', padding: '24px', borderRadius: '12px' }}>
+                  <h3 style={{ marginBottom: '16px', color: '#333' }}>🔍 SEO Settings</h3>
+                  <p className="section-hint" style={{ marginBottom: '20px' }}>Optimize your product for search engines</p>
+
+                  <div className="form-row">
+                    <div className="form-group-modern">
+                      <label>Slug (URL-friendly)</label>
+                      <input
+                        type="text"
+                        value={formData.slug}
+                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                        placeholder="auto-generated-from-name"
+                      />
+                      <span className="input-hint">Leave blank to auto-generate from product name</span>
+                    </div>
+
+                    <div className="form-group-modern">
+                      <label>Meta Title (60 chars max)</label>
+                      <input
+                        type="text"
+                        value={formData.metaTitle}
+                        onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                        maxLength="60"
+                        placeholder="SEO-optimized title"
+                      />
+                      <span className="input-hint">{formData.metaTitle.length}/60 characters</span>
+                    </div>
+                  </div>
+
+                  <div className="form-group-modern">
+                    <label>Meta Description (160 chars max)</label>
+                    <textarea
+                      value={formData.metaDescription}
+                      onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                      maxLength="160"
+                      rows="3"
+                      placeholder="Brief description for search engines"
+                    />
+                    <span className="input-hint">{formData.metaDescription.length}/160 characters</span>
+                  </div>
+
+                  <div className="form-group-modern">
+                    <label>Keywords (comma separated)</label>
+                    <input
+                      type="text"
+                      value={formData.keywords}
+                      onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
+                      placeholder="solar panel, renewable energy, 500W"
+                    />
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group-modern">
+                      <label>OG Image URL (optional)</label>
+                      <input
+                        type="text"
+                        value={formData.ogImage}
+                        onChange={(e) => setFormData({ ...formData, ogImage: e.target.value })}
+                        placeholder="/uploads/products/image.jpg"
+                      />
+                      <span className="input-hint">Leave blank to use first product image</span>
+                    </div>
+
+                    <div className="form-group-modern">
+                      <label>Canonical URL (optional)</label>
+                      <input
+                        type="text"
+                        value={formData.canonicalUrl}
+                        onChange={(e) => setFormData({ ...formData, canonicalUrl: e.target.value })}
+                        placeholder="https://example.com/products/slug"
+                      />
+                    </div>
                   </div>
                 </div>
 

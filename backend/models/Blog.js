@@ -61,6 +61,36 @@ const blogSchema = new mongoose.Schema({
   publishedDate: {
     type: Date,
   },
+  // SEO Fields
+  slug: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true,
+    lowercase: true,
+  },
+  metaTitle: {
+    type: String,
+    default: '',
+    maxlength: 60,
+  },
+  metaDescription: {
+    type: String,
+    default: '',
+    maxlength: 160,
+  },
+  keywords: {
+    type: String,
+    default: '',
+  },
+  ogImage: {
+    type: String,
+    default: '',
+  },
+  canonicalUrl: {
+    type: String,
+    default: '',
+  },
   createdAt: {
     type: Date,
     default: Date.now,

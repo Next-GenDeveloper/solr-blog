@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Context
 import { AuthProvider } from './context/AuthContext';
@@ -29,110 +30,120 @@ import Register from './pages/Register';
 
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-        <div className="App">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={
-              <>
-                <Navbar />
-                <Home />
-                <Footer />
-              </>
-            } />
-            <Route path="/about" element={
-              <>
-                <Navbar />
-                <About />
-                <Footer />
-              </>
-            } />
-            <Route path="/shop" element={
-              <>
-                <Navbar />
-                <Shop />
-                <Footer />
-              </>
-            } />
-            <Route path="/product/:id" element={
-              <>
-                <Navbar />
-                <ProductDetail />
-                <Footer />
-              </>
-            } />
-            <Route path="/cart" element={
-              <>
-                <Navbar />
-                <Cart />
-                <Footer />
-              </>
-            } />
-            <Route path="/checkout" element={
-              <>
-                <Navbar />
-                <Checkout />
-                <Footer />
-              </>
-            } />
-            <Route path="/order-confirmation" element={
-              <>
-                <Navbar />
-                <OrderConfirmation />
-                <Footer />
-              </>
-            } />
-            <Route path="/blog" element={
-              <>
-                <Navbar />
-                <Blog />
-                <Footer />
-              </>
-            } />
-            <Route path="/blog/:id" element={
-              <>
-                <Navbar />
-                <BlogDetail />
-                <Footer />
-              </>
-            } />
-            <Route path="/contact" element={
-              <>
-                <Navbar />
-                <Contact />
-                <Footer />
-              </>
-            } />
-            <Route path="/service-provider" element={
-              <>
-                <Navbar />
-                <ServiceProvider />
-                <Footer />
-              </>
-            } />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            {/* Admin panel now runs separately on port 3001 */}
-            {/* Access admin panel at: http://localhost:3001 */}
-          </Routes>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-        </div>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+          <div className="App">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={
+                <>
+                  <Navbar />
+                  <Home />
+                  <Footer />
+                </>
+              } />
+              <Route path="/about" element={
+                <>
+                  <Navbar />
+                  <About />
+                  <Footer />
+                </>
+              } />
+              <Route path="/shop" element={
+                <>
+                  <Navbar />
+                  <Shop />
+                  <Footer />
+                </>
+              } />
+              <Route path="/products/:slug" element={
+                <>
+                  <Navbar />
+                  <ProductDetail />
+                  <Footer />
+                </>
+              } />
+              {/* Keep old route for backward compatibility */}
+              <Route path="/product/:id" element={
+                <>
+                  <Navbar />
+                  <ProductDetail />
+                  <Footer />
+                </>
+              } />
+              <Route path="/cart" element={
+                <>
+                  <Navbar />
+                  <Cart />
+                  <Footer />
+                </>
+              } />
+              <Route path="/checkout" element={
+                <>
+                  <Navbar />
+                  <Checkout />
+                  <Footer />
+                </>
+              } />
+              <Route path="/order-confirmation" element={
+                <>
+                  <Navbar />
+                  <OrderConfirmation />
+                  <Footer />
+                </>
+              } />
+              <Route path="/blog" element={
+                <>
+                  <Navbar />
+                  <Blog />
+                  <Footer />
+                </>
+              } />
+              <Route path="/blog/:slug" element={
+                <>
+                  <Navbar />
+                  <BlogDetail />
+                  <Footer />
+                </>
+              } />
+              <Route path="/contact" element={
+                <>
+                  <Navbar />
+                  <Contact />
+                  <Footer />
+                </>
+              } />
+              <Route path="/service-provider" element={
+                <>
+                  <Navbar />
+                  <ServiceProvider />
+                  <Footer />
+                </>
+              } />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Admin panel now runs separately on port 3001 */}
+              {/* Access admin panel at: http://localhost:3001 */}
+            </Routes>
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
+          </div>
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 
