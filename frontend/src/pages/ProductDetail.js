@@ -1,22 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FaStar, FaCheck, FaMinus, FaPlus } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaStar, FaCheck, FaMinus, FaPlus, FaUser, FaThumbsUp, FaCheckCircle } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const { addToCart } = useCart();
 
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [ratingDistribution, setRatingDistribution] = useState({ 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 });
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    rating: 5,
+    title: '',
+    comment: ''
+  });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
   useEffect(() => {
     fetchProduct();
+    fetchReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -30,6 +45,71 @@ const ProductDetail = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchReviews = async () => {
+    setReviewsLoading(true);
+    try {
+      const { data } = await axios.get(`/api/reviews/product/${id}`);
+      setReviews(data.data);
+      setRatingDistribution(data.ratingDistribution);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error('Please login to submit a review');
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      await axios.post('/api/reviews', {
+        productId: id,
+        ...reviewForm
+      });
+      toast.success('Review submitted successfully!');
+      setShowReviewForm(false);
+      setReviewForm({ rating: 5, title: '', comment: '' });
+      fetchReviews();
+      fetchProduct();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const handleHelpfulVote = async (reviewId) => {
+    if (!user) {
+      toast.error('Please login to vote');
+      return;
+    }
+    try {
+      await axios.post(`/api/reviews/${reviewId}/helpful`);
+      fetchReviews();
+    } catch (error) {
+      toast.error('Failed to record vote');
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const calculateTotalReviews = () => {
+    return Object.values(ratingDistribution).reduce((a, b) => a + b, 0);
+  };
+
+  const getRatingPercentage = (stars) => {
+    const total = calculateTotalReviews();
+    return total > 0 ? (ratingDistribution[stars] / total) * 100 : 0;
   };
 
   const handleQuantityChange = (type) => {
@@ -202,6 +282,188 @@ const ProductDetail = () => {
             )}
           </motion.div>
         </div>
+
+        {/* Customer Reviews Section */}
+        <motion.div 
+          className="reviews-section"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <div className="reviews-header">
+            <h2>Customer Reviews</h2>
+            {user && (
+              <button 
+                className="btn btn-primary write-review-btn"
+                onClick={() => setShowReviewForm(!showReviewForm)}
+              >
+                {showReviewForm ? 'Cancel' : 'Write a Review'}
+              </button>
+            )}
+          </div>
+
+          {/* Review Summary */}
+          <div className="reviews-summary">
+            <div className="rating-overview">
+              <div className="average-rating">
+                <span className="rating-number">{product.rating?.toFixed(1) || '0.0'}</span>
+                <div className="rating-stars">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar
+                      key={i}
+                      className={i < Math.round(product.rating || 0) ? 'star-filled' : 'star-empty'}
+                    />
+                  ))}
+                </div>
+                <span className="total-reviews">Based on {product.numReviews || 0} reviews</span>
+              </div>
+              <div className="rating-distribution">
+                {[5, 4, 3, 2, 1].map((stars) => (
+                  <div key={stars} className="rating-bar-row">
+                    <span className="star-label">{stars} star</span>
+                    <div className="rating-bar">
+                      <div 
+                        className="rating-bar-fill"
+                        style={{ width: `${getRatingPercentage(stars)}%` }}
+                      ></div>
+                    </div>
+                    <span className="rating-count">{ratingDistribution[stars]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Review Form */}
+          <AnimatePresence>
+            {showReviewForm && (
+              <motion.div 
+                className="review-form-container"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <form onSubmit={handleSubmitReview} className="review-form">
+                  <h3>Share Your Experience</h3>
+                  
+                  <div className="form-group rating-input">
+                    <label>Your Rating</label>
+                    <div className="star-rating-input">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <FaStar
+                          key={star}
+                          className={star <= reviewForm.rating ? 'star-active' : 'star-inactive'}
+                          onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="reviewTitle">Review Title</label>
+                    <input
+                      type="text"
+                      id="reviewTitle"
+                      placeholder="Summarize your experience..."
+                      value={reviewForm.title}
+                      onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
+                      required
+                      maxLength={100}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="reviewComment">Your Review</label>
+                    <textarea
+                      id="reviewComment"
+                      placeholder="Tell us about your experience with this product..."
+                      value={reviewForm.comment}
+                      onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                      required
+                      rows={5}
+                      maxLength={1000}
+                    />
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary submit-review-btn"
+                    disabled={submittingReview}
+                  >
+                    {submittingReview ? 'Submitting...' : 'Submit Review'}
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Reviews List */}
+          <div className="reviews-list">
+            {reviewsLoading ? (
+              <div className="reviews-loading">
+                <div className="loader"></div>
+              </div>
+            ) : reviews.length > 0 ? (
+              reviews.map((review) => (
+                <motion.div 
+                  key={review._id} 
+                  className="review-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <div className="review-header">
+                    <div className="reviewer-info">
+                      <div className="reviewer-avatar">
+                        {review.user?.avatar ? (
+                          <img src={review.user.avatar} alt={review.user.name} />
+                        ) : (
+                          <FaUser />
+                        )}
+                      </div>
+                      <div className="reviewer-details">
+                        <span className="reviewer-name">{review.user?.name || 'Anonymous'}</span>
+                        {review.isVerifiedPurchase && (
+                          <span className="verified-badge">
+                            <FaCheckCircle /> Verified Purchase
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="review-date">{formatDate(review.createdAt)}</span>
+                  </div>
+
+                  <div className="review-rating">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar
+                        key={i}
+                        className={i < review.rating ? 'star-filled' : 'star-empty'}
+                      />
+                    ))}
+                  </div>
+
+                  <h4 className="review-title">{review.title}</h4>
+                  <p className="review-comment">{review.comment}</p>
+
+                  <div className="review-actions">
+                    <button 
+                      className="helpful-btn"
+                      onClick={() => handleHelpfulVote(review._id)}
+                    >
+                      <FaThumbsUp /> Helpful ({review.helpfulVotes})
+                    </button>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <div className="no-reviews">
+                <p>No reviews yet. Be the first to review this product!</p>
+                {!user && (
+                  <p className="login-prompt">Please login to write a review.</p>
+                )}
+              </div>
+            )}
+          </div>
+        </motion.div>
       </div>
     </div>
   );

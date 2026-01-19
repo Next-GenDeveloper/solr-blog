@@ -32,6 +32,7 @@ app.use('/api/cart', require('./routes/cart'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/reviews', require('./routes/reviews'));
 
 // Health Check
 app.get('/api/health', (req, res) => {
